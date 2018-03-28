@@ -22,35 +22,36 @@
         app:layout_constraintVertical_bias="0.051">
 
         <android.support.design.widget.TextInputEditText
-            android:id="@+id/edtUsuario"
+            android:id="@+id/edtCorreo"
             android:layout_width="match_parent"
             android:layout_height="45dp"
-            android:hint="Usuario" />
+            android:hint="Correo"
+            android:inputType="text"
+            android:singleLine="true" />
     </android.support.design.widget.TextInputLayout>
 
     <android.support.design.widget.TextInputLayout
         android:id="@+id/inputContraseña"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
         android:layout_marginTop="8dp"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/inputUsuario"
-        app:layout_constraintVertical_bias="0.028">
+        app:layout_constraintTop_toBottomOf="@+id/inputUsuario">
 
         <android.support.design.widget.TextInputEditText
             android:id="@+id/edtContraseña"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Constraseña" />
+            android:hint="Constraseña"
+            android:inputType="textPassword" />
 
     </android.support.design.widget.TextInputLayout>
 
     <Button
         android:id="@+id/btnIniciar"
+        style="@style/Widget.AppCompat.Button.Borderless"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
@@ -67,10 +68,12 @@
 
     <Button
         android:id="@+id/btnRegistro"
+        style="@style/Widget.AppCompat.Button.Borderless"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
         android:layout_marginTop="8dp"
+        android:background="@null"
         android:text="Registrar"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
