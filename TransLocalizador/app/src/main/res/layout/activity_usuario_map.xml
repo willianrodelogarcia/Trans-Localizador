@@ -2,30 +2,48 @@
 <FrameLayout android:layout_height="match_parent"
     android:layout_width="match_parent"
     xmlns:tools="http://schemas.android.com/tools"
-    xmlns:android="http://schemas.android.com/apk/res/android">
-    <fragment
-        android:id="@+id/map"
-        android:name="com.google.android.gms.maps.SupportMapFragment"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:context=".UsuarioMapActivity" />
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
 
 
-    <android.support.v4.widget.DrawerLayout
-        android:id="@+id/drawer_layout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-        <android.support.design.widget.NavigationView
-            android:id="@+id/navi"
-            android:layout_gravity="start"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent">
+            <android.support.v4.widget.DrawerLayout
+                android:id="@+id/drawer_layout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
 
-        </android.support.design.widget.NavigationView>
-    </android.support.v4.widget.DrawerLayout>
+                <fragment
+                    android:id="@+id/map"
+                    android:name="com.google.android.gms.maps.SupportMapFragment"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    tools:context=".UsuarioMapActivity" />
+                <LinearLayout
 
+                    android:orientation="vertical"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
 
+                    <ImageButton
+                        android:id="@+id/btnMenu"
+                        android:layout_marginTop="20dp"
+                        android:layout_marginLeft="20dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@null"
+                        android:src="@mipmap/ic_menu" />
+                </LinearLayout>
+                <android.support.design.widget.NavigationView
+                    android:id="@+id/navi"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    app:menu="@menu/nav_options"
+                    app:headerLayout="@layout/header_nav"
+                    android:layout_gravity="start">
+
+                </android.support.design.widget.NavigationView>
+
+            </android.support.v4.widget.DrawerLayout>
 </FrameLayout>
 
 

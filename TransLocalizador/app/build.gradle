@@ -16,6 +16,9 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    defaultConfig {
+        multiDexEnabled true
+    }
 }
 
 dependencies {
@@ -26,6 +29,8 @@ dependencies {
     implementation 'com.google.firebase:firebase-core:12.0.0'
     implementation 'com.google.firebase:firebase-auth:12.0.0'
     implementation 'com.google.firebase:firebase-database:12.0.0'
+    implementation 'com.google.firebase:firebase-storage:12.0.0'
+    implementation 'com.google.android.gms:play-services:12.0.0'
     implementation 'com.google.android.gms:play-services-maps:12.0.0'
     testImplementation 'junit:junit:4.12'
     implementation 'com.android.support:design:26.1.0'

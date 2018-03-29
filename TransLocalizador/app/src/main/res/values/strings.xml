@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">TransLocalizador</string>
     <string name="title_activity_usuario_map">Map</string>
+    <string name="title_activity_conductor_map">Map</string>
 </resources>
