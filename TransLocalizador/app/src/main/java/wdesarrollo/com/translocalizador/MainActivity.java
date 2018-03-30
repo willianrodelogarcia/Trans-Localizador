@@ -15,8 +15,11 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -40,34 +43,60 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
                 if(user!=null){
                     //Manda al mapa del Usuario para ver a los conductores
-                    String tipoUsuario = user.getUid();
-                    DatabaseReference refTransporte = FirebaseDatabase.getInstance().getReference().child("Transportes").child(tipoUsuario);
-                    //DatabaseReference refUsuario = FirebaseDatabase.getInstance().getReference().child("Usuarios").child(tipoUsuario);
+                    final String tipoUsuario = user.getUid();
 
-                    //Toast.makeText(MainActivity.this,"REF "+refConductor.getKey()+ " REFU "+refUsuario.getKey(),Toast.LENGTH_LONG).show();
+                    DatabaseReference refTransporte = FirebaseDatabase.getInstance().getReference().child("UsuariosTransporte").child("Transportes").child(tipoUsuario);
+                    DatabaseReference refUsuario = FirebaseDatabase.getInstance().getReference().child("UsuariosTransporte").child("Usuarios").child(tipoUsuario);
 
-                    if(tipoUsuario.equals(refTransporte.getKey())){
+                    refTransporte.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            if(dataSnapshot.exists()){
+                                if(dataSnapshot.getValue()!=null){
 
-                        Toast.makeText(MainActivity.this,"Es un conductor",Toast.LENGTH_LONG).show();
-                       /* Intent intent = new Intent(MainActivity.this,ConductorMapActivity.class);
-                        startActivity(intent);
-                        finish();*/
-                    }else{
-                        Toast.makeText(MainActivity.this,"Es un Usuario",Toast.LENGTH_LONG).show();
-                    }
+                                    if (dataSnapshot.child("correo").getValue()!=null) {
+                                        if (dataSnapshot.child("correo").getValue().toString().equals(user.getEmail())){
+                                            Intent intent = new Intent(MainActivity.this,ConductorMapActivity.class);
+                                            startActivity(intent);
+                                            finish();
+                                        }
+                                    }
+                                }
+                            }
+                        }
 
-                        /*Intent intent = new Intent(MainActivity.this,UsuarioMapActivity.class);
-                        startActivity(intent);
-                        finish();*/
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
 
+                        }
+                    });
 
+                    refUsuario.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            if(dataSnapshot.exists()){
+                                if(dataSnapshot.getValue()!=null){
 
+                                    if (dataSnapshot.child("correo").getValue()!=null) {
+                                        if (dataSnapshot.child("correo").getValue().toString().equals(user.getEmail())){
+                                            Intent intent = new Intent(MainActivity.this,UsuarioMapActivity.class);
+                                            startActivity(intent);
+                                            finish();
+                                        }
+                                    }
+                                }
+                            }
+                        }
 
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
 
+                        }
+                    });
                 }
 
             }

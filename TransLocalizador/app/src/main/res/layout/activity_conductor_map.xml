@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-
-
 <FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:map="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_height="match_parent" >
 
     <fragment
@@ -16,10 +14,20 @@
         android:layout_height="match_parent"
         tools:context=".ConductorMapActivity" />
 
-    <Button
-        android:text="Conductor"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:orientation="vertical"
+        android:layout_gravity="bottom"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:src="@mipmap/ic_menu"
+            android:id="@+id/menu_cerrar"
+            android:layout_gravity="right"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
 
 </FrameLayout>
