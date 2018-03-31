@@ -21,12 +21,14 @@
         android:layout_gravity="bottom"
         android:layout_height="wrap_content">
 
-        <ImageView
-            android:src="@mipmap/ic_menu"
-            android:id="@+id/menu_cerrar"
-            android:layout_gravity="right"
+        <ImageButton
+
+            android:id="@+id/menu_cerrar_conductor"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:background="@null"
+            android:src="@mipmap/ic_menu" />
 
     </LinearLayout>
 

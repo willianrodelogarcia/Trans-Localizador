@@ -17,6 +17,7 @@ import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
@@ -24,6 +25,10 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
+import com.firebase.geofire.GeoFire;
+import com.firebase.geofire.GeoLocation;
+import com.firebase.geofire.GeoQuery;
+import com.firebase.geofire.GeoQueryEventListener;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
@@ -33,9 +38,19 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.HashMap;
+import java.util.List;
 
 public class UsuarioMapActivity extends FragmentActivity implements OnMapReadyCallback {
 
@@ -44,6 +59,9 @@ public class UsuarioMapActivity extends FragmentActivity implements OnMapReadyCa
     private ImageButton mMenu;
     private DrawerLayout mDrawerLayout;
     private NavigationView mNavigationView;
+
+    private LatLng pickUpLocation;
+    private Boolean requestBol = false;
 
     Location mLastLocation;
     LocationRequest mLocationRequest;
@@ -62,11 +80,13 @@ public class UsuarioMapActivity extends FragmentActivity implements OnMapReadyCa
         mapFragment.getMapAsync(this);
 
 
+
         mMenu = findViewById(R.id.btnMenu);
 
         mDrawerLayout = findViewById(R.id.drawer_layout);
 
         mNavigationView = findViewById(R.id.navi);
+
 
 
         mMenu.setOnClickListener(new View.OnClickListener() {
@@ -120,26 +140,17 @@ public class UsuarioMapActivity extends FragmentActivity implements OnMapReadyCa
 
     }
 
-
-
-    /**
-     * Manipulates the map once available.
-     * This callback is triggered when the map is ready to be used.
-     * This is where we can add markers or lines, add listeners or move the camera. In this case,
-     * we just add a marker near Sydney, Australia.
-     * If Google Play services is not installed on the device, the user will be prompted to install
-     * it inside the SupportMapFragment. This method will only be triggered once the user has
-     * installed Google Play services and returned to the app.
-     */
     @SuppressLint("RestrictedApi")
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
         mLocationRequest = new LocationRequest();
-        mLocationRequest.setInterval(1000);
-        mLocationRequest.setFastestInterval(1000);
+        /*mLocationRequest.setInterval(1000);
+        mLocationRequest.setFastestInterval(1000);*/
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+
+
         // Add a marker in Sydney and move the camera
 
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
@@ -151,19 +162,123 @@ public class UsuarioMapActivity extends FragmentActivity implements OnMapReadyCa
         }
         mFusedLocationClient.requestLocationUpdates(mLocationRequest, mLocationCallback, Looper.myLooper());
         mMap.setMyLocationEnabled(true);
+
+
+    }
+
+    private int radius = 1;
+    private Boolean transporteFound = false;
+    private String transporteFoundID;
+
+    GeoQuery geoQuery;
+    private void getTransportesCercanos() {
+
+        DatabaseReference transporteTrabjando = FirebaseDatabase.getInstance().getReference().child("transporteTrabajando");
+        GeoFire geoFire = new GeoFire(transporteTrabjando);
+
+        geoQuery = geoFire.queryAtLocation(new GeoLocation(pickUpLocation.latitude,pickUpLocation.longitude ),radius);
+        geoQuery.removeAllListeners();
+
+
+        geoQuery.addGeoQueryEventListener(new GeoQueryEventListener() {
+            @Override
+            public void onKeyEntered(String key, GeoLocation location) {
+                if(!transporteFound) {
+                    transporteFound = true;
+                    transporteFoundID = key;
+
+                    DatabaseReference transporteRef = FirebaseDatabase.getInstance().getReference().child("UsuariosTransporte").child("Transportes").child(transporteFoundID);
+                    String usuarioId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+                    /*HashMap map = new HashMap();
+                    map.put("customerRideId",usuarioId);
+                    transporteRef.updateChildren(map);*/
+
+                    getTransporteLocation();
+                }
+            }
+
+            @Override
+            public void onKeyExited(String key) {
+
+            }
+
+            @Override
+            public void onKeyMoved(String key, GeoLocation location) {
+
+            }
+
+            @Override
+            public void onGeoQueryReady() {
+                if(!transporteFound){
+                    radius++;
+                    getTransportesCercanos();
+                }
+            }
+
+            @Override
+            public void onGeoQueryError(DatabaseError error) {
+
+            }
+        });
+
+    }
+    private Marker mDriverMarker;
+
+    private DatabaseReference driverLocationRef;
+    private ValueEventListener driverLocationListener;
+    public void getTransporteLocation(){
+
+        driverLocationRef = FirebaseDatabase.getInstance().getReference().child("transporteTrabajando").child(transporteFoundID).child("l");
+
+
+        driverLocationListener = driverLocationRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    List<Object> map = (List<Object>) dataSnapshot.getValue();
+                    double locationLat = 0;
+                    double locationLng = 0;
+                    if (map.get(0) != null) {
+                        locationLat = Double.parseDouble(map.get(0).toString());
+                    }
+                    if (map.get(1) != null) {
+                        locationLng = Double.parseDouble(map.get(1).toString());
+                    }
+                    LatLng driverLatLng = new LatLng(locationLat, locationLng);
+                    if (mDriverMarker != null) {
+                        mDriverMarker.remove();
+                    }
+
+                    mDriverMarker = mMap.addMarker(new MarkerOptions().position(driverLatLng).title("Aquí Estoy!!!").icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_person)));
+                }else{
+                    mDriverMarker.remove();
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
     }
 
     LocationCallback mLocationCallback = new LocationCallback(){
         @Override
         public void onLocationResult(LocationResult locationResult) {
-            for (Location location: locationResult.getLocations()){
-                if (getApplicationContext()!=null){
-                    mLastLocation = location;
 
+            for (Location location: locationResult.getLocations()){
+
+                if (getApplicationContext()!=null){
+                    requestBol = true;
+                    mLastLocation = location;
+                    pickUpLocation = new LatLng(mLastLocation.getLatitude(),mLastLocation.getLongitude());
                     LatLng latLng = new LatLng(location.getLatitude(),location.getLongitude());
 
                     mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
                     mMap.animateCamera(CameraUpdateFactory.zoomTo(17));
+
+                    getTransportesCercanos();
                 }
             }
         }
@@ -186,6 +301,24 @@ public class UsuarioMapActivity extends FragmentActivity implements OnMapReadyCa
             }else{
                 ActivityCompat.requestPermissions(UsuarioMapActivity.this,new String[]{Manifest.permission.ACCESS_FINE_LOCATION},1);
             }
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        switch (requestCode){
+            case 1:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                    if (ContextCompat.checkSelfPermission(this,Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
+                        mFusedLocationClient.requestLocationUpdates(mLocationRequest, mLocationCallback, Looper.myLooper());
+                        mMap.setMyLocationEnabled(true);
+                    }
+                }else{
+                    Toast.makeText(getApplicationContext(),"Please provide the permission",Toast.LENGTH_LONG).show();
+                }
+                break;
         }
     }
 }
