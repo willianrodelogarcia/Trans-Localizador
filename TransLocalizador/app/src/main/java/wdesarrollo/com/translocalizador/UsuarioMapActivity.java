@@ -249,7 +249,7 @@ public class UsuarioMapActivity extends FragmentActivity implements OnMapReadyCa
                         mDriverMarker.remove();
                     }
 
-                    mDriverMarker = mMap.addMarker(new MarkerOptions().position(driverLatLng).title("Aquí Estoy!!!").icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_person)));
+                    mDriverMarker = mMap.addMarker(new MarkerOptions().position(driverLatLng).title("Transporte").icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_car)));
                 }else{
                     mDriverMarker.remove();
                 }

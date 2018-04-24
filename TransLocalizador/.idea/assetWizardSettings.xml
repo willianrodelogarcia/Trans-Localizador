@@ -76,8 +76,8 @@
                                       <entry key="assetType" value="IMAGE" />
                                       <entry key="cropped" value="true" />
                                       <entry key="iconShape" value="NONE" />
-                                      <entry key="imageAsset" value="D:\Documents\App\person.png" />
-                                      <entry key="outputName" value="ic_person" />
+                                      <entry key="imageAsset" value="D:\Documents\App\car-top.png" />
+                                      <entry key="outputName" value="ic_car" />
                                     </map>
                                   </option>
                                 </PersistentState>
